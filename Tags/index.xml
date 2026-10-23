@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns:usbkbcs="tags:usbkeyboardcodescanner">
 	<Channel name="S7-1" driver="S7" >
-		<IpAddr>localhost</IpAddr>
+		<IpAddr>172.16.10.20</IpAddr>
 		<Rack>0</Rack>
 		<Slot>1</Slot>
 	</Channel>
@@ -12,7 +12,6 @@
 	<Channel name="USB-3#" driver="UsbKeyboardCodeScanner">
 		<usbkbcs:VendorId>0x0581</usbkbcs:VendorId>
 		<usbkbcs:ProductId>0x011A</usbkbcs:ProductId>
-		<usbkbcs:InstanceId><![CDATA[7&37BBFD20&0&0000]]></usbkbcs:InstanceId>
 		<usbkbcs:Timeout>00:00:05</usbkbcs:Timeout>
 	</Channel>
 

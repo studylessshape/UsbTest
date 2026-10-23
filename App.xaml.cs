@@ -6,8 +6,8 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using usbtest.Tags.Logicets;
-using StdUnit.Tags.R3;
 using R3;
+using StdUnit.Tags.R3;
 
 namespace usbtest;
 
@@ -37,12 +37,17 @@ public partial class App : Application
             return Task.FromResult(true);
         };
 
-        this.ObservableProject = this.Ctrl.ObserveStartedOrStopped()
+        // 上游 ObserveStartedOrStopped() 是 hot 事件，启动事件可能早于窗口订阅就发完：
+        // 1) 在 StartPollAsync 之前先 Connect，确保不会漏掉启动事件；
+        // 2) Replay(1) 缓存最近一个项目，后订阅者（MainWindow）也能立即拿到；
+        // 3) Prepend 用 Func 重载，让“当前项目”在订阅时读取，而不是启动时快照成 null。
+        var projectStream = this.Ctrl.ObserveStartedOrStopped()
             .Select(evt => evt.Project)
-            .Prepend(Ctrl.Project)
+            .Prepend(() => this.Ctrl.Project)
             .DistinctUntilChanged()
-            .Publish()
-            .RefCount();
+            .Replay(1);
+        projectStream.Connect();
+        this.ObservableProject = projectStream;
 
         StartTagsPoll(this.Root, this.Ctrl);
         StartWeb(app);
